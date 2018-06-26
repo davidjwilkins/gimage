@@ -2,18 +2,21 @@ package img
 
 import (
 	"fmt"
+	"github.com/gocolly/colly"
 	"image/jpeg"
 	"net/http"
+	"net/url"
 	"os"
-	"strings"
-
-	"github.com/gocolly/colly"
 )
 
 func getURL(name string) string {
-	name = strings.Replace(name, " ", "_", -1)
-	name = strings.Replace(name, `"`, "", -1)
-	return fmt.Sprintf("https://www.google.com/search?tbm=isch&q=%v", name)
+	uri, err := url.Parse("https://www.google.com/search?tbm=isch")
+	if err != nil {
+		panic(err)
+	}
+	uri.Query().Set("q", name)
+	uri.RawQuery = uri.Query().Encode()
+	return uri.String()
 }
 
 func downloadImage(url string, folder string) error {
